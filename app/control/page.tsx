@@ -1,7 +1,13 @@
 "use client";
 
-// import JoystickModes from "@/components/Joystick";
-// import SpeedSlider from "@/components/Slider";
+import dynamic from "next/dynamic";
+
+const SemiJoystick = dynamic(() => import('@/components/Joystick'), {
+  ssr: false,
+});
+const SpeedSlider = dynamic(() => import('@/components/Slider'), {
+  ssr: false,
+});
 
 export default function Home() {
   return (
@@ -14,8 +20,8 @@ export default function Home() {
         />
       </div>
       <div className="flex flex-col md:flex-row gap-4">
-        {/* <JoystickModes /> */}
-        {/* <SpeedSlider /> */}
+        <SemiJoystick />
+        <SpeedSlider />
       </div>
       <div className="flex flex-wrap gap-4 justify-center">
         <button className="button">Vioce Control</button>
