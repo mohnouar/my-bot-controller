@@ -1,41 +1,58 @@
-'use client'
+"use client";
+import { useRef, useState } from "react";
+import getSocket from '@/lib/socket';
 
-import { useState } from 'react'
-import { classNames } from '@/lib/utils' // أو ضع دالة classNames مباشرة هنا
 
 export default function SpeedSlider() {
-  const [value, setValue] = useState(100)
+  const socket = getSocket();
+  const [speed, setSpeed] = useState<number>(100);
+  const throttleTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const MIN = 10
-  const MAX = 255
-  const STEP = 49  // عدد الخطوات الظاهرة تقريبًا
+  const handleSpeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newSpeed = parseInt(e.target.value);
+    setSpeed(newSpeed);
 
-  const steps = Array.from({ length: Math.floor((MAX - MIN) / STEP) + 1 }, (_, i) => MIN + i * STEP)
+    if (!throttleTimeoutRef.current) {
+      socket.emit("joystick", { speed: newSpeed });
+
+      throttleTimeoutRef.current = setTimeout(() => {
+        throttleTimeoutRef.current = null;
+      }, 100);
+    }
+  };
 
   return (
-    <div className="max-w-md mx-auto bg-zinc-900 text-white p-6 rounded-xl shadow">
-      <h2 className="text-sm mb-4">🔧 السرعة القصوى: <span className="font-bold">{value}</span></h2>
+    <div className="w-full max-w-md mx-auto px-6 py-3 rounded-2xl shadow-xl text-white bg-gradient-to-br from-[#1A1C20] to-[#0F1014] border border-[#1F232A] ring-1 ring-[#2A2E38]">
+      <h2 className="text-xl font-semibold mb-2 text-center">Robot Max Speed</h2>
+
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-sm text-gray-400">10</span>
+        <span className="text-sm text-gray-400">255</span>
+      </div>
 
       <input
         type="range"
-        min={MIN}
-        max={MAX}
-        value={value}
-        step={1}
-        onChange={(e) => setValue(Number(e.target.value))}
-        className="w-full accent-green-500"
+        min="10"
+        max="255"
+        value={speed}
+        onChange={handleSpeedChange}
+        className="w-full appearance-none h-2 bg-gradient-to-r from-[#1F232A] to-[#2C3038] rounded-full outline-none transition-all duration-300
+                   [&::-webkit-slider-thumb]:appearance-none
+                   [&::-webkit-slider-thumb]:h-4
+                   [&::-webkit-slider-thumb]:w-4
+                   [&::-webkit-slider-thumb]:rounded-full
+                   [&::-webkit-slider-thumb]:bg-blue-500
+                   [&::-webkit-slider-thumb]:shadow-md
+                   [&::-moz-range-thumb]:appearance-none
+                   [&::-moz-range-thumb]:h-4
+                   [&::-moz-range-thumb]:w-4
+                   [&::-moz-range-thumb]:rounded-full
+                   [&::-moz-range-thumb]:bg-blue-500"
       />
 
-      <div className="relative w-full h-6 mt-3">
-        <div className="absolute top-0 left-0 right-0 flex justify-between text-xs text-gray-400">
-          {steps.map((step) => (
-            <span key={step} className="text-center" style={{ width: '1px' }}>
-              |
-              <div className="mt-1">{step}</div>
-            </span>
-          ))}
-        </div>
-      </div>
+      <p className="mt-4 text-center text-sm text-gray-300">
+        Current Speed: <span className="font-bold text-blue-400">{speed}</span>
+      </p>
     </div>
-  )
+  );
 }
