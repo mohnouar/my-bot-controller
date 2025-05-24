@@ -1,6 +1,6 @@
 "use client";
 
-import { resetSocket } from "@/lib/socket";
+import getSocket, { resetSocket } from "@/lib/socket";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -22,7 +22,7 @@ export default function Home() {
 
     // إعادة تهيئة الاتصال
     resetSocket();
-
+    getSocket();
     alert("تم حفظ الإعدادات بنجاح! يُفضل إعادة تحميل الصفحة لتطبيق الاتصال.");
 
   };

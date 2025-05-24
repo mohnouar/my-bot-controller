@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useRef, useState } from "react";
 import nipplejs, { JoystickManager, JoystickOutputData } from "nipplejs";
 import getSocket from '@/lib/socket';
@@ -13,20 +14,6 @@ export default function SemiJoystick() {
   const zoneRef = useRef<HTMLDivElement | null>(null);
   const [debug, setDebug] = useState<DebugState>({});
   const lastSentRef = useRef<number>(0);
-
-  useEffect(() => {
-    socket.on("connect", () => {
-      console.log("Connected to Flask WebSocket server");
-    });
-
-    socket.on("disconnect", () => {
-      console.log("Disconnected from server");
-    });
-
-    return () => {
-      // لا تفصل الاتصال
-    };
-  }, []);
 
   useEffect(() => {
     if (!zoneRef.current) return;
