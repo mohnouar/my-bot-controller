@@ -1,7 +1,7 @@
 "use client";
 
-import JoystickModes from "@/components/Joystick";
-import SpeedSlider from "@/components/Slider";
+// import JoystickModes from "@/components/Joystick";
+// import SpeedSlider from "@/components/Slider";
 
 export default function Home() {
   if (!window) return;
@@ -15,8 +15,8 @@ export default function Home() {
         />
       </div>
       <div className="flex flex-col md:flex-row gap-4">
-        <JoystickModes />
-        <SpeedSlider />
+        {/* <JoystickModes /> */}
+        {/* <SpeedSlider /> */}
       </div>
       <div className="flex flex-wrap gap-4 justify-center">
         <button className="button">Vioce Control</button>
