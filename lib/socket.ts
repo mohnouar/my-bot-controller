@@ -12,7 +12,10 @@ export function resetSocket() {
   }
 }
 
-export default function getSocket(): Socket {
+export default function getSocket(): Socket | null {
+  // ✅ تأكد أننا في المتصفح فقط
+  if (typeof window === "undefined") return null;
+
   const savedIP = localStorage.getItem("flaskServer") || "http://localhost:5000";
 
   if (!socket || savedIP !== lastUsedIP) {
