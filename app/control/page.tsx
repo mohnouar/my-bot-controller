@@ -4,7 +4,6 @@
 // import SpeedSlider from "@/components/Slider";
 
 export default function Home() {
-  if (!window) return;
   return (
     <main className="p-5 flex flex-col gap-4 h-screen">
       <div className="w-full h-64">
