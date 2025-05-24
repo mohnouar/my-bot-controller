@@ -1,26 +1,18 @@
 "use client";
-
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import getSocket from '@/lib/socket';
 
+
 export default function SpeedSlider() {
+  const socket = getSocket();
   const [speed, setSpeed] = useState<number>(100);
   const throttleTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const [socket, setSocket] = useState<any>(null);
-
-  useEffect(() => {
-    // ✅ تأكد أننا في المتصفح ثم احصل على السوكيت
-    if (typeof window !== "undefined") {
-      const s = getSocket();
-      setSocket(s);
-    }
-  }, []);
 
   const handleSpeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newSpeed = parseInt(e.target.value);
     setSpeed(newSpeed);
 
-    if (!throttleTimeoutRef.current && socket && socket.connected) {
+    if (!throttleTimeoutRef.current) {
       socket.emit("joystick", { speed: newSpeed });
 
       throttleTimeoutRef.current = setTimeout(() => {

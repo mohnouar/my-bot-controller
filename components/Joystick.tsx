@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useRef, useState } from "react";
 import nipplejs, { JoystickManager, JoystickOutputData } from "nipplejs";
 import getSocket from '@/lib/socket';
@@ -9,30 +8,28 @@ type DebugState = {
 };
 
 export default function SemiJoystick() {
-  const [socket, setSocket] = useState<any>(null);
+  const socket = getSocket();
   const joystickRef = useRef<JoystickManager | null>(null);
   const zoneRef = useRef<HTMLDivElement | null>(null);
   const [debug, setDebug] = useState<DebugState>({});
   const lastSentRef = useRef<number>(0);
 
-  // ✅ تأكد أننا في المتصفح قبل استدعاء getSocket
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const s = getSocket();
-      setSocket(s);
+    socket.on("connect", () => {
+      console.log("Connected to Flask WebSocket server");
+    });
 
-      s.on("connect", () => {
-        console.log("Connected to Flask WebSocket server");
-      });
+    socket.on("disconnect", () => {
+      console.log("Disconnected from server");
+    });
 
-      s.on("disconnect", () => {
-        console.log("Disconnected from server");
-      });
-    }
+    return () => {
+      // لا تفصل الاتصال
+    };
   }, []);
 
   useEffect(() => {
-    if (!zoneRef.current || !socket) return;
+    if (!zoneRef.current) return;
 
     const joystick = nipplejs.create({
       zone: zoneRef.current as HTMLElement,
@@ -40,7 +37,7 @@ export default function SemiJoystick() {
       catchDistance: 150,
       color: "white",
       size: 200,
-    }) as JoystickManager;
+    }) as JoystickManager; // ✅ الحل هنا
 
     joystickRef.current = joystick;
 
@@ -63,7 +60,7 @@ export default function SemiJoystick() {
     return () => {
       joystickRef.current?.destroy();
     };
-  }, [socket]);
+  }, []);
 
   const updateDebug = (data: DebugState) => {
     setDebug((prev) => ({ ...prev, ...data }));
@@ -89,7 +86,7 @@ export default function SemiJoystick() {
   };
 
   return (
-    <div>
+    <div className="">
       <div
         ref={zoneRef}
         className="relative h-64 rounded-2xl bg-gradient-to-br from-[#1A1C20] to-[#0F1014] border border-[#1F232A] ring-1 ring-[#2A2E38]"
